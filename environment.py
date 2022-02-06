@@ -3,14 +3,14 @@ from salesman import Salesman
 
 
 class Environment:
-  def __init__(self, mutation_prob, pop_size, target_fitness, city_map, max_gens=False):
-    self.population = [Salesman(city_map) for _ in range(pop_size)]
-    self.mutation_probability = mutation_prob
+  def __init__(self, evo_setup):
+    self.population = [Salesman(evo_setup["city_map"]) for _ in range(evo_setup["pop_size"])]
+    self.mutation_probability = evo_setup["mutation_prob"]
     self.best = self.population[0]
     self.finished = False
     self.generation = 0
-    self.target_fitness = target_fitness
-    self.max_gens = max_gens
+    self.target_fitness = evo_setup["target_fitness"]
+    self.max_gens = evo_setup["max_gens"]
     self.best_salesmen = []
 
   def calc_pop_fitness(self):
@@ -21,7 +21,6 @@ class Environment:
     for salesman in self.population:
       if salesman.fitness > self.best.fitness:  # New best salesman.
         self.best = salesman
-        self.best_salesmen.append(salesman)
       if salesman.fitness >= self.target_fitness:  # Terminate if target fitness already achieved.
         self.finished = True
 
@@ -62,7 +61,7 @@ class Environment:
       self.update_best()
       self.reproduce()
       self.calc_pop_fitness()
-      self.display()
+      self.best_salesmen.append(self.best)
       self.generation += 1
       if self.max_gens and self.generation > self.max_gens:
         self.finished = True

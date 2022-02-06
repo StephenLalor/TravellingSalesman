@@ -1,33 +1,34 @@
 from city_map import CityMap
 from environment import Environment
+from plotting import plot_cities, plot_fitness
+
 
 def main():
-  target_fitness = 1
-  initial_pop = 250
-  mutation_probability = 0.2
-  max_gens = 100
 
-  num_cities = 8
-  grid_size = (10, 10)
+  # Setup:
+  evo_setup = {
+    "city_map": CityMap(8, (10, 10)),
+    "pop_size": 250,
+    "mutation_prob": 0.2,
+    "target_fitness": 1,
+    "max_gens": 100
+  }
 
-  city_map = CityMap(num_cities, grid_size)
-  best_path = city_map.gen_brute_force() ## SLOW!
-  environment = Environment(mutation_probability, initial_pop, target_fitness, city_map, max_gens)
+  # Simulate evolution:
+  environment = Environment(evo_setup)
   environment.sim()
-  best_sim_path = environment.best.path
+  best_path_sim = environment.best.path
+  best_path_sim_dist = evo_setup["city_map"].get_path_dist(best_path_sim)
 
-  print(city_map)
-  print(f"[Brute Force] Path: {best_path} with length: {city_map.get_path_dist(best_path)}")
-  print(f"[Genetic Algorithm] Path: {best_sim_path} with length: {city_map.get_path_dist(best_sim_path)}")
+  # Brute force:
+  best_path_bf = evo_setup["city_map"].gen_brute_force()
+  best_path_bf_dist = evo_setup["city_map"].get_path_dist(best_path_bf)
+
+  # Visualise:
+  plot_cities(evo_setup["city_map"])
+  plot_fitness(environment.best_salesmen)
+  print(f"[Brute Force] Path: {best_path_bf} with length: {best_path_bf_dist}")
+  print(f"[Genetic Algorithm] Path: {best_path_sim} with length: {best_path_sim_dist}")
 
 if __name__ == "main":
   main()
-
-for salesman in environment.best_salesmen:
-  print(salesman)
-
-
-
-
-# TODO: Record the best paths in a list and make a graph.
-# TODO: Do documentation on objects.
